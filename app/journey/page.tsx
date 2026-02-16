@@ -141,8 +141,7 @@ const stages: Stage[] = [
   },
   {
     title: "Raising concerns or questions",
-    summary:
-      "How to raise issues, complaints, or safeguarding concerns.",
+    summary: "How to raise issues, complaints, or safeguarding concerns.",
     involves:
       "This stage covers anything that doesn’t feel right — from questions about decisions or invoices, to concerns about care quality or safety.",
     local:
@@ -156,6 +155,8 @@ const stages: Stage[] = [
 ];
 
 export default function Journey() {
+  const dotTop = 8; // tweak 6–12 if you want perfect alignment with your H2
+
   return (
     <main
       style={{
@@ -177,108 +178,99 @@ export default function Journey() {
         what usually happens next.
       </p>
 
-      {/* Stages with aligned spine */}
-<div>
-  {stages.map((stage, index) => {
-    const isFirst = index === 0;
-    const isLast = index === stages.length - 1;
+      <div>
+        {stages.map((stage, index) => {
+          const isFirst = index === 0;
+          const isLast = index === stages.length - 1;
 
-    // Position dot to align visually with the H2 heading.
-    const dotTop = 8; // tweak +/- 2px if you want it perfect
+          // line segment: start at dot for first stage, end at dot for last stage
+          const lineTop = isFirst ? dotTop : 0;
+          const lineBottom = isLast ? `calc(100% - ${dotTop}px)` : 0;
 
-    // Line should start at the dot for the first stage and end at the dot for the last stage.
-    const lineTop = isFirst ? dotTop : 0;
-    const lineBottom = isLast ? `calc(100% - ${dotTop}px)` : "100%";
-
-    return (
-      <div
-        key={stage.title}
-        style={{
-          display: "grid",
-          gridTemplateColumns: "56px 1fr",
-          gap: "24px",
-          alignItems: "start",
-        }}
-      >
-        {/* Spine cell */}
-        <div style={{ position: "relative", height: "100%" }}>
-          {/* Line segment */}
-          <div
-            style={{
-              position: "absolute",
-              left: "27px",
-              top: lineTop,
-              bottom: isLast ? `calc(100% - ${dotTop}px)` : 0,
-              width: "2px",
-              background: "#e6e6e6",
-              borderRadius: "2px",
-            }}
-          />
-
-          {/* Dot */}
-          <div
-            style={{
-              position: "absolute",
-              left: "20px",
-              top: dotTop,
-              width: "14px",
-              height: "14px",
-              borderRadius: "999px",
-              background: "#fff",
-              border: "2px solid #cfd8e3",
-              boxSizing: "border-box",
-            }}
-            title={stage.title}
-          />
-        </div>
-
-        {/* Content cell */}
-        <section
-          style={{
-            marginBottom: "3.25rem",
-            paddingBottom: "2.25rem",
-            borderBottom: "1px solid #eee",
-            maxWidth: "780px",
-          }}
-        >
-          <h2 style={{ fontSize: "1.4rem", marginBottom: "0.5rem" }}>
-            {stage.title}
-          </h2>
-
-          <p style={{ color: "#555" }}>{stage.summary}</p>
-
-          <ExpandableSection title="What this stage involves">
-            <p>{stage.involves}</p>
-          </ExpandableSection>
-
-          <ExpandableSection title="How this normally works in your area">
-            <p>{stage.local}</p>
-            <p
+          return (
+            <div
+              key={stage.title}
               style={{
-                marginTop: "0.75rem",
-                fontSize: "0.95rem",
-                color: "#666",
+                display: "grid",
+                gridTemplateColumns: "56px 1fr",
+                gap: "24px",
+                alignItems: "start",
               }}
             >
-              <em>Last verified: January 2026</em>
-            </p>
-          </ExpandableSection>
+              {/* Spine cell */}
+              <div style={{ position: "relative", height: "100%" }}>
+                <div
+                  style={{
+                    position: "absolute",
+                    left: "27px",
+                    top: lineTop,
+                    bottom: lineBottom as any,
+                    width: "2px",
+                    background: "#e6e6e6",
+                    borderRadius: "2px",
+                  }}
+                />
+                <div
+                  style={{
+                    position: "absolute",
+                    left: "20px",
+                    top: dotTop,
+                    width: "14px",
+                    height: "14px",
+                    borderRadius: "999px",
+                    background: "#fff",
+                    border: "2px solid #cfd8e3",
+                    boxSizing: "border-box",
+                  }}
+                  title={stage.title}
+                />
+              </div>
 
-          <ExpandableSection title="What usually happens next">
-            <ul style={{ paddingLeft: "1.2rem", marginTop: "0.5rem" }}>
-              {stage.next.map((item) => (
-                <li key={item} style={{ marginTop: "0.35rem" }}>
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </ExpandableSection>
-        </section>
-      </div>
-    );
-  })}
-</div>
+              {/* Content cell */}
+              <section
+                style={{
+                  marginBottom: "3.25rem",
+                  paddingBottom: "2.25rem",
+                  borderBottom: "1px solid #eee",
+                  maxWidth: "780px",
+                }}
+              >
+                <h2 style={{ fontSize: "1.4rem", marginBottom: "0.5rem" }}>
+                  {stage.title}
+                </h2>
 
+                <p style={{ color: "#555" }}>{stage.summary}</p>
+
+                <ExpandableSection title="What this stage involves">
+                  <p>{stage.involves}</p>
+                </ExpandableSection>
+
+                <ExpandableSection title="How this normally works in your area">
+                  <p>{stage.local}</p>
+                  <p
+                    style={{
+                      marginTop: "0.75rem",
+                      fontSize: "0.95rem",
+                      color: "#666",
+                    }}
+                  >
+                    <em>Last verified: January 2026</em>
+                  </p>
+                </ExpandableSection>
+
+                <ExpandableSection title="What usually happens next">
+                  <ul style={{ paddingLeft: "1.2rem", marginTop: "0.5rem" }}>
+                    {stage.next.map((item) => (
+                      <li key={item} style={{ marginTop: "0.35rem" }}>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </ExpandableSection>
+              </section>
+            </div>
+          );
+        })}
       </div>
     </main>
   );
