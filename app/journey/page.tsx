@@ -160,8 +160,8 @@ export default function Journey() {
     <main
       style={{
         fontFamily: "system-ui, -apple-system, sans-serif",
-        padding: "4rem 2rem",
-        maxWidth: "780px",
+        padding: "4rem 1.5rem",
+        maxWidth: "980px",
         margin: "0 auto",
         lineHeight: 1.7,
       }}
@@ -170,52 +170,104 @@ export default function Journey() {
         How adult social care usually works in {localAuthorityName}
       </h1>
 
-      <p style={{ marginBottom: "2.5rem", color: "#444" }}>
+      <p style={{ marginBottom: "2.5rem", color: "#444", maxWidth: "780px" }}>
         Most adult social care journeys involve around eight stages. The details
         vary by area, but the overall shape is broadly the same. Each section
         explains what the stage involves, how it normally works locally, and
         what usually happens next.
       </p>
 
-      {stages.map((stage) => (
-        <section
-          key={stage.title}
-          style={{
-            marginBottom: "3rem",
-            paddingBottom: "2rem",
-            borderBottom: "1px solid #eee",
-          }}
-        >
-          <h2 style={{ fontSize: "1.4rem", marginBottom: "0.5rem" }}>
-            {stage.title}
-          </h2>
+      {/* Two-column layout: spine + content */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "56px 1fr",
+          gap: "24px",
+          alignItems: "start",
+        }}
+      >
+        {/* Spine */}
+        <div style={{ position: "relative" }}>
+          {/* line */}
+          <div
+            style={{
+              position: "absolute",
+              left: "27px",
+              top: "14px",
+              bottom: "14px",
+              width: "2px",
+              background: "#e6e6e6",
+              borderRadius: "2px",
+            }}
+          />
+          {/* dots */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "78px" }}>
+            {stages.map((s) => (
+              <div
+                key={s.title}
+                style={{
+                  width: "14px",
+                  height: "14px",
+                  borderRadius: "999px",
+                  background: "#ffffff",
+                  border: "2px solid #cfd8e3",
+                  boxSizing: "border-box",
+                  marginLeft: "20px",
+                }}
+                title={s.title}
+              />
+            ))}
+          </div>
+        </div>
 
-          <p style={{ color: "#555" }}>{stage.summary}</p>
+        {/* Content */}
+        <div>
+          {stages.map((stage) => (
+            <section
+              key={stage.title}
+              style={{
+                marginBottom: "3.25rem",
+                paddingBottom: "2.25rem",
+                borderBottom: "1px solid #eee",
+                maxWidth: "780px",
+              }}
+            >
+              <h2 style={{ fontSize: "1.4rem", marginBottom: "0.5rem" }}>
+                {stage.title}
+              </h2>
 
-          <ExpandableSection title="What this stage involves">
-            <p>{stage.involves}</p>
-          </ExpandableSection>
+              <p style={{ color: "#555" }}>{stage.summary}</p>
 
-          <ExpandableSection
-            title={`How this normally works in your area`}
-          >
-            <p>{stage.local}</p>
-            <p style={{ marginTop: "0.75rem", fontSize: "0.95rem", color: "#666" }}>
-              <em>Last verified: January 2026</em>
-            </p>
-          </ExpandableSection>
+              <ExpandableSection title="What this stage involves">
+                <p>{stage.involves}</p>
+              </ExpandableSection>
 
-          <ExpandableSection title="What usually happens next">
-            <ul style={{ paddingLeft: "1.2rem", marginTop: "0.5rem" }}>
-              {stage.next.map((item) => (
-                <li key={item} style={{ marginTop: "0.35rem" }}>
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </ExpandableSection>
-        </section>
-      ))}
+              <ExpandableSection title="How this normally works in your area">
+                <p>{stage.local}</p>
+                <p
+                  style={{
+                    marginTop: "0.75rem",
+                    fontSize: "0.95rem",
+                    color: "#666",
+                  }}
+                >
+                  <em>Last verified: January 2026</em>
+                </p>
+              </ExpandableSection>
+
+              <ExpandableSection title="What usually happens next">
+                <ul style={{ paddingLeft: "1.2rem", marginTop: "0.5rem" }}>
+                  {stage.next.map((item) => (
+                    <li key={item} style={{ marginTop: "0.35rem" }}>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </ExpandableSection>
+            </section>
+          ))}
+        </div>
+      </div>
     </main>
   );
 }
