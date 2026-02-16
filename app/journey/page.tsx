@@ -1,37 +1,34 @@
-const stages = [
-  {
-    title: "Getting started",
-    summary: "This is the first step in asking the council about possible support."
-  },
-  {
-    title: "Understanding your needs",
-    summary: "A conversation about what daily life is like and what support might help."
-  },
-  {
-    title: "Deciding what support is available",
-    summary: "The council decides whether needs meet the national eligibility criteria."
-  },
-  {
-    title: "Planning your support",
-    summary: "Agreeing how eligible needs will be met."
-  },
-  {
-    title: "Working out the cost",
-    summary: "The council assesses how much you may need to contribute."
-  },
-  {
-    title: "Putting support in place",
-    summary: "Arranging services or payments so care can begin."
-  },
-  {
-    title: "Reviewing and adjusting support",
-    summary: "Checking whether support is working and making changes if needed."
-  },
-  {
-    title: "Raising concerns or questions",
-    summary: "How to raise issues, complaints, or safeguarding concerns."
-  }
-];
+"use client";
+
+import { useState } from "react";
+
+function ExpandableSection({ title, children }: any) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div style={{ marginTop: "1rem" }}>
+      <button
+        onClick={() => setOpen(!open)}
+        style={{
+          background: "none",
+          border: "none",
+          padding: 0,
+          fontSize: "1rem",
+          color: "#2c5282",
+          cursor: "pointer"
+        }}
+      >
+        {open ? "▾ " : "▸ "} {title}
+      </button>
+
+      {open && (
+        <div style={{ marginTop: "0.5rem", color: "#555" }}>
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function Journey() {
   return (
@@ -54,22 +51,38 @@ export default function Journey() {
         typically unfolds.
       </p>
 
-      {stages.map((stage, index) => (
-        <section
-          key={index}
-          style={{
-            marginBottom: "3rem",
-            paddingBottom: "2rem",
-            borderBottom: "1px solid #eee"
-          }}
-        >
-          <h2 style={{ fontSize: "1.4rem", marginBottom: "0.5rem" }}>
-            {stage.title}
-          </h2>
+      <section style={{ marginBottom: "3rem" }}>
+        <h2 style={{ fontSize: "1.4rem", marginBottom: "0.5rem" }}>
+          Getting started
+        </h2>
 
-          <p style={{ color: "#555" }}>{stage.summary}</p>
-        </section>
-      ))}
+        <p style={{ color: "#555" }}>
+          This is the first step in asking the council about possible support.
+        </p>
+
+        <ExpandableSection title="What this stage involves">
+          <p>
+            You contact the council to explain the situation and request support.
+            You do not need to know whether someone is eligible before making contact.
+          </p>
+        </ExpandableSection>
+
+        <ExpandableSection title="How this normally works in your area">
+          <p>
+            In most areas, initial contact is made by phone or online form.
+            The council reviews the information and decides whether to arrange a needs assessment.
+          </p>
+        </ExpandableSection>
+
+        <ExpandableSection title="What usually happens next">
+          <ul>
+            <li>A needs assessment is arranged.</li>
+            <li>The council asks for further information.</li>
+            <li>Advice or signposting is provided.</li>
+          </ul>
+        </ExpandableSection>
+      </section>
+
     </main>
   );
 }
