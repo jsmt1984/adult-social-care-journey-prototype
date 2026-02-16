@@ -4,11 +4,11 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { laContent, StageId } from "../data/laContent";
 
 type Stage = {
-  id: StageId; // stable anchor
+  id: StageId;
   title: string;
   summary: string;
   involves: string;
-  localFallback: string; // generic fallback
+  localFallback: string;
   next: string[];
 };
 
@@ -199,7 +199,7 @@ export default function JourneyClient({
         involves:
           "This stage covers anything that doesn’t feel right — from questions about decisions or invoices, to concerns about care quality or safety.",
         localFallback:
-          `In ${localAuthorityName}, there will be a complaints process and a safeguarding contact route. Advocacy or support organisations may also be available locally.`,
+          `In ${localAuthorityName}, there will be a complaints process and a safeguarding contact route. Advocacy support organisations may also be available locally.`,
         next: [
           "The council responds and explains what will happen next.",
           "If safeguarding is involved, enquiries may be initiated.",
@@ -329,6 +329,9 @@ export default function JourneyClient({
           const lastVerified = localFromData?.lastVerified || "February 2026";
           const links = (localFromData?.links || []).filter((l) => !!l.url);
 
+          const typicalTiming = localFromData?.typicalTiming;
+          const whatYouNeed = localFromData?.whatYouNeed;
+
           return (
             <div
               key={stage.id}
@@ -376,11 +379,33 @@ export default function JourneyClient({
                   {stage.title}
                 </h2>
 
-                <p style={{ color: "#555" }}>{stage.summary}</p>
+                <p style={{ color: "#555", marginBottom: "0.4rem" }}>
+                  {stage.summary}
+                </p>
+
+                {/* NEW: subtle timing line */}
+                {typicalTiming && (
+                  <p style={{ color: "#6b7280", fontSize: "0.95rem", marginTop: 0 }}>
+                    <em>Typical timing: {typicalTiming}</em>
+                  </p>
+                )}
 
                 <ExpandableSection title="What this stage involves">
                   <p>{stage.involves}</p>
                 </ExpandableSection>
+
+                {/* NEW: What you'll need checklist (only when available) */}
+                {whatYouNeed && whatYouNeed.length > 0 && (
+                  <ExpandableSection title="What you’ll need">
+                    <ul style={{ paddingLeft: "1.2rem", marginTop: "0.5rem" }}>
+                      {whatYouNeed.map((item) => (
+                        <li key={item} style={{ marginTop: "0.35rem" }}>
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </ExpandableSection>
+                )}
 
                 <ExpandableSection title="How this normally works in your area">
                   <p>{localText}</p>
@@ -404,6 +429,9 @@ export default function JourneyClient({
                           </li>
                         ))}
                       </ul>
+                      <div style={{ marginTop: "0.6rem", fontSize: "0.95rem", color: "#666" }}>
+                        If a link doesn’t load, search the council site for the page title above.
+                      </div>
                     </div>
                   )}
 
