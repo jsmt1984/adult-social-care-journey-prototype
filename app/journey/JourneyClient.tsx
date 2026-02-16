@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { laContent, StageId } from "../data/laContent";
 
 type Stage = {
-  id: string; // stable anchor
+  id: StageId; // stable anchor
   title: string;
   summary: string;
   involves: string;
-  local: string;
+  localFallback: string; // generic fallback
   next: string[];
 };
 
@@ -52,6 +53,7 @@ function lookupLocalAuthority(postcodeRaw: string) {
   const pc = normalisePostcode(postcodeRaw);
   if (!pc) return "your area";
 
+  // Rough demo mapping (replace with real lookup later)
   if (pc.startsWith("SW1") || pc.startsWith("W1") || pc.startsWith("SE1")) {
     return "Westminster City Council";
   }
@@ -61,6 +63,7 @@ function lookupLocalAuthority(postcodeRaw: string) {
   if (pc.startsWith("B1") || pc.startsWith("B2") || pc.startsWith("B3")) {
     return "Birmingham City Council";
   }
+
   return "Countyshire Council";
 }
 
@@ -80,6 +83,9 @@ export default function JourneyClient({
   const subjectShort = isForSomeoneElse ? "the person you support" : "you";
   const subjectPossessive = isForSomeoneElse ? "their" : "your";
 
+  // Pick LA-specific content (fallback to Countyshire)
+  const la = laContent[localAuthorityName] || laContent["Countyshire Council"];
+
   const stages: Stage[] = useMemo(
     () => [
       {
@@ -89,7 +95,7 @@ export default function JourneyClient({
           "This is the first step in asking the council about possible support.",
         involves:
           `You contact the council to explain the situation and request support for ${subjectShort}. You do not need to know whether ${subjectShort} are eligible before making contact.`,
-        local:
+        localFallback:
           `In ${localAuthorityName}, initial contact is usually made by phone or online form. The council reviews what you’ve shared and decides whether to arrange a needs assessment.`,
         next: [
           "A needs assessment is arranged.",
@@ -104,7 +110,7 @@ export default function JourneyClient({
           "A conversation about what daily life is like and what support might help.",
         involves:
           `This stage is about understanding ${subjectPossessive} day-to-day needs and the outcomes that matter. It may involve questions about daily activities, safety, wellbeing, and informal support already in place.`,
-        local:
+        localFallback:
           `In ${localAuthorityName}, assessments may be done by phone, online, or in person depending on circumstances and urgency. You can ask for reasonable adjustments if needed.`,
         next: [
           "The council records the assessment and considers eligibility.",
@@ -119,7 +125,7 @@ export default function JourneyClient({
           "The council decides whether needs meet the national eligibility criteria.",
         involves:
           "The council decides whether the assessed needs meet the national eligibility threshold. This decision should be explained clearly, including reasons where relevant.",
-        local:
+        localFallback:
           `In ${localAuthorityName}, the decision may be provided by letter, email, portal update, or phone call. If anything is unclear, you can ask how the decision was reached.`,
         next: [
           "If eligible, care and support planning follows.",
@@ -135,7 +141,7 @@ export default function JourneyClient({
           `This stage turns assessed needs into a plan: what support will be provided, how often, and what it is aiming to achieve. ${
             subjectShort === "you" ? "You" : "You and the person you support"
           } should be involved in shaping the plan.`,
-        local:
+        localFallback:
           `In ${localAuthorityName}, planning may be done by a social worker or a dedicated team. You can ask about options such as direct payments where appropriate.`,
         next: [
           "A personal budget is identified.",
@@ -149,7 +155,7 @@ export default function JourneyClient({
         summary: "The council assesses how much you may need to contribute.",
         involves:
           `Adult social care is usually means-tested. The council gathers information about income, savings, and certain expenses to work out any contribution towards ${subjectPossessive} care.`,
-        local:
+        localFallback:
           `In ${localAuthorityName}, you may be asked to provide documents (for example, bank statements or pension details). The council should explain how the calculation works and what happens if information is missing.`,
         next: [
           "You receive a contribution decision (how much will be paid).",
@@ -163,7 +169,7 @@ export default function JourneyClient({
         summary: "Arranging services or payments so care can begin.",
         involves:
           "This is where agreed support is set up. That might be council-arranged services, support you arrange yourself, or direct payments to help organise care.",
-        local:
+        localFallback:
           `In ${localAuthorityName}, this stage may involve matching with providers, agreeing start dates, and confirming what will be delivered. Sometimes availability affects timescales.`,
         next: [
           "Support starts (or interim arrangements are made).",
@@ -178,7 +184,7 @@ export default function JourneyClient({
           "Checking whether support is working and making changes if needed.",
         involves:
           "Support should be reviewed to check it’s meeting needs and outcomes. Reviews can also happen if circumstances change — for example, health changes, a carer’s situation changes, or support isn’t working.",
-        local:
+        localFallback:
           `In ${localAuthorityName}, reviews may be scheduled routinely or triggered by a request. If support isn’t meeting needs, you can ask for a review.`,
         next: [
           "Support continues as-is, or changes are made.",
@@ -192,7 +198,7 @@ export default function JourneyClient({
         summary: "How to raise issues, complaints, or safeguarding concerns.",
         involves:
           "This stage covers anything that doesn’t feel right — from questions about decisions or invoices, to concerns about care quality or safety.",
-        local:
+        localFallback:
           `In ${localAuthorityName}, there will be a complaints process and a safeguarding contact route. Advocacy or support organisations may also be available locally.`,
         next: [
           "The council responds and explains what will happen next.",
@@ -217,14 +223,12 @@ export default function JourneyClient({
   useEffect(() => {
     if (!whereNow) return;
     const el = stageRefs.current[whereNow];
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [whereNow]);
 
   const dotTop = 8;
 
-  const highlightDotStyle = (active: boolean) => ({
+  const dotStyle = (active: boolean) => ({
     position: "absolute" as const,
     left: "20px",
     top: dotTop,
@@ -320,6 +324,11 @@ export default function JourneyClient({
 
           const isActive = whereNow === stage.id;
 
+          const localFromData = la.stages?.[stage.id];
+          const localText = localFromData?.localSummary || stage.localFallback;
+          const lastVerified = localFromData?.lastVerified || "February 2026";
+          const links = (localFromData?.links || []).filter((l) => !!l.url);
+
           return (
             <div
               key={stage.id}
@@ -343,7 +352,7 @@ export default function JourneyClient({
                     borderRadius: "2px",
                   }}
                 />
-                <div style={highlightDotStyle(isActive)} title={stage.title} />
+                <div style={dotStyle(isActive)} title={stage.title} />
               </div>
 
               {/* Content cell */}
@@ -374,9 +383,32 @@ export default function JourneyClient({
                 </ExpandableSection>
 
                 <ExpandableSection title="How this normally works in your area">
-                  <p>{stage.local}</p>
+                  <p>{localText}</p>
+
+                  {links.length > 0 && (
+                    <div style={{ marginTop: "0.75rem" }}>
+                      <div style={{ color: "#333", marginBottom: "0.35rem" }}>
+                        <strong>Useful links</strong>
+                      </div>
+                      <ul style={{ paddingLeft: "1.2rem", marginTop: "0.35rem" }}>
+                        {links.map((l) => (
+                          <li key={l.label} style={{ marginTop: "0.35rem" }}>
+                            <a
+                              href={l.url}
+                              target="_blank"
+                              rel="noreferrer"
+                              style={{ color: "#2c5282" }}
+                            >
+                              {l.label}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
                   <p style={{ marginTop: "0.75rem", fontSize: "0.95rem", color: "#666" }}>
-                    <em>Last verified: January 2026</em>
+                    <em>Last verified: {lastVerified}</em>
                   </p>
                 </ExpandableSection>
 
@@ -397,4 +429,3 @@ export default function JourneyClient({
     </main>
   );
 }
-
