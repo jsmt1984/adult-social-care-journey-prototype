@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type Stage = {
+  id: string; // stable anchor
   title: string;
   summary: string;
   involves: string;
@@ -82,6 +83,7 @@ export default function JourneyClient({
   const stages: Stage[] = useMemo(
     () => [
       {
+        id: "getting-started",
         title: "Getting started",
         summary:
           "This is the first step in asking the council about possible support.",
@@ -96,6 +98,7 @@ export default function JourneyClient({
         ],
       },
       {
+        id: "understanding-needs",
         title: "Understanding your needs",
         summary:
           "A conversation about what daily life is like and what support might help.",
@@ -110,6 +113,7 @@ export default function JourneyClient({
         ],
       },
       {
+        id: "eligibility",
         title: "Deciding what support is available",
         summary:
           "The council decides whether needs meet the national eligibility criteria.",
@@ -124,6 +128,7 @@ export default function JourneyClient({
         ],
       },
       {
+        id: "planning",
         title: "Planning your support",
         summary: "Agreeing how eligible needs will be met.",
         involves:
@@ -139,6 +144,7 @@ export default function JourneyClient({
         ],
       },
       {
+        id: "cost",
         title: "Working out the cost",
         summary: "The council assesses how much you may need to contribute.",
         involves:
@@ -152,6 +158,7 @@ export default function JourneyClient({
         ],
       },
       {
+        id: "putting-in-place",
         title: "Putting support in place",
         summary: "Arranging services or payments so care can begin.",
         involves:
@@ -165,6 +172,7 @@ export default function JourneyClient({
         ],
       },
       {
+        id: "review",
         title: "Reviewing and adjusting support",
         summary:
           "Checking whether support is working and making changes if needed.",
@@ -179,6 +187,7 @@ export default function JourneyClient({
         ],
       },
       {
+        id: "concerns",
         title: "Raising concerns or questions",
         summary: "How to raise issues, complaints, or safeguarding concerns.",
         involves:
@@ -195,7 +204,38 @@ export default function JourneyClient({
     [localAuthorityName, subjectPossessive, subjectShort]
   );
 
+  // Locator state
+  const [whereNow, setWhereNow] = useState<string>("");
+
+  // Map stage id -> DOM node
+  const stageRefs = useRef<Record<string, HTMLElement | null>>({});
+  const setStageRef = (id: string) => (el: HTMLElement | null) => {
+    stageRefs.current[id] = el;
+  };
+
+  // Scroll when selection changes
+  useEffect(() => {
+    if (!whereNow) return;
+    const el = stageRefs.current[whereNow];
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [whereNow]);
+
   const dotTop = 8;
+
+  const highlightDotStyle = (active: boolean) => ({
+    position: "absolute" as const,
+    left: "20px",
+    top: dotTop,
+    width: "14px",
+    height: "14px",
+    borderRadius: "999px",
+    background: active ? "#2c5282" : "#fff",
+    border: active ? "2px solid #2c5282" : "2px solid #cfd8e3",
+    boxSizing: "border-box" as const,
+    transition: "all 150ms ease",
+  });
 
   return (
     <main
@@ -216,7 +256,7 @@ export default function JourneyClient({
         vary by area, but the overall shape is broadly the same.
       </p>
 
-      <p style={{ marginBottom: "2.5rem", color: "#555", maxWidth: "780px" }}>
+      <p style={{ marginBottom: "1.5rem", color: "#555", maxWidth: "780px" }}>
         This version is tailored for{" "}
         <strong>{isForSomeoneElse ? "someone you support" : "you"}</strong>
         {postcode.trim() ? (
@@ -229,6 +269,47 @@ export default function JourneyClient({
         )}
       </p>
 
+      {/* Locator */}
+      <div
+        style={{
+          marginBottom: "2.5rem",
+          maxWidth: "780px",
+          padding: "1rem",
+          border: "1px solid #eee",
+          borderRadius: "12px",
+          background: "#fafafa",
+        }}
+      >
+        <div style={{ marginBottom: "0.5rem", color: "#333" }}>
+          <strong>Where are you right now?</strong>
+        </div>
+
+        <select
+          value={whereNow}
+          onChange={(e) => setWhereNow(e.target.value)}
+          style={{
+            width: "100%",
+            padding: "0.65rem 0.75rem",
+            borderRadius: "10px",
+            border: "1px solid #ddd",
+            background: "#fff",
+            fontSize: "1rem",
+          }}
+        >
+          <option value="">Choose a stage…</option>
+          {stages.map((s) => (
+            <option key={s.id} value={s.id}>
+              {s.title}
+            </option>
+          ))}
+        </select>
+
+        <div style={{ marginTop: "0.6rem", fontSize: "0.95rem", color: "#666" }}>
+          You can change this at any time. It doesn’t save any personal data.
+        </div>
+      </div>
+
+      {/* Stages + aligned spine */}
       <div>
         {stages.map((stage, index) => {
           const isFirst = index === 0;
@@ -237,9 +318,11 @@ export default function JourneyClient({
           const lineTop = isFirst ? dotTop : 0;
           const lineBottom = isLast ? `calc(100% - ${dotTop}px)` : 0;
 
+          const isActive = whereNow === stage.id;
+
           return (
             <div
-              key={stage.title}
+              key={stage.id}
               style={{
                 display: "grid",
                 gridTemplateColumns: "56px 1fr",
@@ -247,6 +330,7 @@ export default function JourneyClient({
                 alignItems: "start",
               }}
             >
+              {/* Spine cell */}
               <div style={{ position: "relative", height: "100%" }}>
                 <div
                   style={{
@@ -259,23 +343,12 @@ export default function JourneyClient({
                     borderRadius: "2px",
                   }}
                 />
-                <div
-                  style={{
-                    position: "absolute",
-                    left: "20px",
-                    top: dotTop,
-                    width: "14px",
-                    height: "14px",
-                    borderRadius: "999px",
-                    background: "#fff",
-                    border: "2px solid #cfd8e3",
-                    boxSizing: "border-box",
-                  }}
-                  title={stage.title}
-                />
+                <div style={highlightDotStyle(isActive)} title={stage.title} />
               </div>
 
+              {/* Content cell */}
               <section
+                ref={setStageRef(stage.id)}
                 style={{
                   marginBottom: "3.25rem",
                   paddingBottom: "2.25rem",
@@ -283,7 +356,14 @@ export default function JourneyClient({
                   maxWidth: "780px",
                 }}
               >
-                <h2 style={{ fontSize: "1.4rem", marginBottom: "0.5rem" }}>
+                <h2
+                  style={{
+                    fontSize: "1.4rem",
+                    marginBottom: "0.5rem",
+                    color: isActive ? "#1f3f66" : "#111",
+                    transition: "color 150ms ease",
+                  }}
+                >
                   {stage.title}
                 </h2>
 
@@ -317,3 +397,4 @@ export default function JourneyClient({
     </main>
   );
 }
+
