@@ -183,42 +183,53 @@ export default function Journey() {
           display: "grid",
           gridTemplateColumns: "56px 1fr",
           gap: "24px",
-          alignItems: "start",
+          alignItems: "stretch",
         }}
       >
-        {/* Spine */}
-        <div style={{ position: "relative" }}>
-          {/* line */}
-          <div
-            style={{
-              position: "absolute",
-              left: "27px",
-              top: "14px",
-              bottom: "14px",
-              width: "2px",
-              background: "#e6e6e6",
-              borderRadius: "2px",
-            }}
-          />
-          {/* dots */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "78px" }}>
-            {stages.map((s) => (
-              <div
-                key={s.title}
-                style={{
-                  width: "14px",
-                  height: "14px",
-                  borderRadius: "999px",
-                  background: "#ffffff",
-                  border: "2px solid #cfd8e3",
-                  boxSizing: "border-box",
-                  marginLeft: "20px",
-                }}
-                title={s.title}
-              />
-            ))}
-          </div>
-        </div>
+       {/* Spine */}
+<div style={{ position: "relative", height: "100%" }}>
+  {/* line */}
+  <div
+    style={{
+      position: "absolute",
+      left: "27px",
+      top: "12px",
+      bottom: "12px",
+      width: "2px",
+      background: "#e6e6e6",
+      borderRadius: "2px",
+    }}
+  />
+
+  {/* dots */}
+  <div
+    style={{
+      height: "100%",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "space-between",
+      paddingTop: "12px",
+      paddingBottom: "12px",
+    }}
+  >
+    {stages.map((s) => (
+      <div
+        key={s.title}
+        style={{
+          width: "14px",
+          height: "14px",
+          borderRadius: "999px",
+          background: "#ffffff",
+          border: "2px solid #cfd8e3",
+          boxSizing: "border-box",
+          marginLeft: "20px",
+        }}
+        title={s.title}
+      />
+    ))}
+  </div>
+</div>
+
 
         {/* Content */}
         <div>
