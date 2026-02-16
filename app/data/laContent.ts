@@ -17,6 +17,10 @@ export type LocalStageContent = {
   localSummary: string;
   links?: LocalLink[];
   lastVerified: string; // e.g. "February 2026"
+
+  // NEW (kept optional to avoid clutter / allow gradual rollout)
+  typicalTiming?: string; // e.g. "Often days–weeks (varies by area)."
+  whatYouNeed?: string[]; // short, practical checklist bullets
 };
 
 export type LocalAuthorityContent = {
@@ -37,6 +41,13 @@ export const laContent: Record<string, LocalAuthorityContent> = {
             url: "https://www.westminster.gov.uk/westminster-city-council-adult-social-care-department",
           },
         ],
+        typicalTiming: "Often: same day to a few weeks (varies by urgency and demand).",
+        whatYouNeed: [
+          "Basic contact details for you and the person needing support",
+          "A short description of what’s difficult day to day",
+          "Any immediate risks or safety concerns",
+          "Key professionals involved (e.g. GP), if relevant",
+        ],
         lastVerified: "February 2026",
       },
       "cost": {
@@ -47,6 +58,13 @@ export const laContent: Record<string, LocalAuthorityContent> = {
             label: "Paying for social care",
             url: "https://www.westminster.gov.uk/health-and-social-care/adult-social-care/health-and-social-care/adult-social-care/about-adult-social-care/paying-social-care",
           },
+        ],
+        typicalTiming: "Often: days–weeks. Care can sometimes start before this is finalised.",
+        whatYouNeed: [
+          "Income details (pensions, benefits, earnings if relevant)",
+          "Savings and capital information",
+          "Housing costs (rent/mortgage) and key bills",
+          "Recent bank statements (if requested)",
         ],
         lastVerified: "February 2026",
       },
@@ -80,6 +98,13 @@ export const laContent: Record<string, LocalAuthorityContent> = {
             url: "https://www.manchester.gov.uk/info/100010/social_services/3584/get_help_support_or_social_care",
           },
         ],
+        typicalTiming: "Often: days–weeks. Faster if urgent risks are identified.",
+        whatYouNeed: [
+          "Basic contact details",
+          "A short description of what support is needed",
+          "Any urgent risks (falls, neglect, safety)",
+          "Preferred way to communicate (phone/email), if helpful",
+        ],
         lastVerified: "February 2026",
       },
       "cost": {
@@ -90,6 +115,13 @@ export const laContent: Record<string, LocalAuthorityContent> = {
             label: "Paying for social care and support",
             url: "https://www.manchester.gov.uk/info/100010/social_services/372/paying_for_social_care_and_support",
           },
+        ],
+        typicalTiming: "Often: days–weeks after assessment/planning (varies).",
+        whatYouNeed: [
+          "Income details (pensions/benefits)",
+          "Savings and capital information",
+          "Housing costs and key bills",
+          "Bank statements if requested",
         ],
         lastVerified: "February 2026",
       },
@@ -149,6 +181,13 @@ export const laContent: Record<string, LocalAuthorityContent> = {
             url: "https://www.birmingham.gov.uk/info/20018/adult_social_care/2703/how_adult_social_care_works/2",
           },
         ],
+        typicalTiming: "Often: days–weeks (can be faster where risks are urgent).",
+        whatYouNeed: [
+          "Basic contact details",
+          "A short description of the situation and risks",
+          "Any support already in place (family/friends/services)",
+          "Key professionals involved (if relevant)",
+        ],
         lastVerified: "February 2026",
       },
       "understanding-needs": {
@@ -170,6 +209,13 @@ export const laContent: Record<string, LocalAuthorityContent> = {
             label: "Paying for adult care and support",
             url: "https://www.birmingham.gov.uk/info/50036/paying_for_adult_care_and_support",
           },
+        ],
+        typicalTiming: "Often: days–weeks. Invoices may follow once charges are confirmed.",
+        whatYouNeed: [
+          "Income details (pensions/benefits)",
+          "Savings and capital information",
+          "Housing costs and key bills",
+          "Bank statements if requested",
         ],
         lastVerified: "February 2026",
       },
@@ -202,13 +248,31 @@ export const laContent: Record<string, LocalAuthorityContent> = {
     },
   },
 
-  // Fallback / demo authority (safe, generic, always available)
+  // Generic fallback authority (also acts as default “generic UK pathway” values)
   "Countyshire Council": {
     name: "Countyshire Council",
     stages: {
       "getting-started": {
         localSummary:
           "Initial contact is usually made by phone or online form. The council reviews what you’ve shared and decides whether to arrange a needs assessment.",
+        typicalTiming: "Often: days–weeks. If urgent, ask how it can be prioritised.",
+        whatYouNeed: [
+          "Basic contact details",
+          "A short description of what’s difficult day to day",
+          "Any immediate risks or safety concerns",
+        ],
+        lastVerified: "February 2026",
+      },
+      "cost": {
+        localSummary:
+          "A financial assessment is usually used to work out what contribution (if any) will be paid towards care. The council should explain what information is needed and how charges are calculated.",
+        typicalTiming: "Often: days–weeks. Care can sometimes start before this is finalised.",
+        whatYouNeed: [
+          "Income details (pensions/benefits)",
+          "Savings and capital information",
+          "Housing costs and key bills",
+          "Bank statements if requested",
+        ],
         lastVerified: "February 2026",
       },
       "concerns": {
